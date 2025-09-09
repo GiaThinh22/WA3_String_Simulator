@@ -170,7 +170,9 @@ function computeCurrentEnergy() {
 
   // KE, elastic PE (using meters), gravitational PE (height in meters)
   let KE = 0.5 * m * v * v;
-  let PEe = 0.5 * k * stretchMeters * stretchMeters;
+  let scaleFactor = 200; // arbitrary factor to make bars visible
+  let PEe = 0.5 * k * stretchMeters * stretchMeters * scaleFactor;
+
   let PEg = m * g * ((500 - centerY) / 40);  // pixel → meter scale (same as before)
   return { KE, PEe, PEg };
 }
