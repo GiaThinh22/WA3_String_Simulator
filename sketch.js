@@ -106,12 +106,6 @@ function draw() {
   spring.display(massObj.y);
   massObj.display();
 
-  // Show theoretical oscillation period (keeps original formula)
-  let T = TWO_PI * sqrt(massSlider.value() / kSlider.value());
-  fill(0);
-  textSize(16);
-  text(`Theoretical Period: ${T.toFixed(2)} s`, 20, height - 20);
-
   // Hint green circle (when user clicks elsewhere)
   hint--;
   hint = max(hint, 0);
