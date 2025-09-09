@@ -1,14 +1,14 @@
 // ---------------- GLOBAL VARIABLES ----------------
 let spring, massObj, baseObj;
 let massSlider, kSlider, dampingSlider;
-let running = false;        // whether the simulation is running
-let dragging = false;       // whether the mass is being dragged
-let hint = 0;               // controls hint circle fading
-let mode = "Beginner";      // display mode (Beginner / Intermediate / Advanced)
-let displacementHistory = [];  // stores displacement for graph
-let maxHistory = 300;          // max points in history
-let totalEnergy = 0;           // reference total energy
-let heatEnergy = 0;            // heat energy lost to damping
+let running = false; // whether the simulation is running
+let dragging = false; // whether the mass is being dragged
+let hint = 0; // controls hint circle fading
+let mode = "Beginner"; // display mode (Beginner / Intermediate / Advanced)
+let displacementHistory = []; // stores displacement for graph
+let maxHistory = 300; // max points in history
+let totalEnergy = 0; // reference total energy
+let heatEnergy = 0; // heat energy lost to damping
 
 // ---------------- SETUP ----------------
 function setup() {
@@ -22,22 +22,34 @@ function setup() {
   kSlider = createSlider(0.05, 0.1, 0.1, 0.01);
   kSlider.position(20, 50);
 
-  dampingSlider = createSlider(0.900, 0.999, 0.995, 0.001);
+  dampingSlider = createSlider(0.9, 0.999, 0.995, 0.001);
   dampingSlider.position(20, 80);
 
   // Create objects: base, spring, and mass
   baseObj = new Base(width / 2, 10);
   spring = new Spring(width / 2, 50, 200);
   updateEquilibriumLength();
-  massObj = new Mass(spring.anchorX, spring.anchorY + spring.equilibriumLength, 5);
+  massObj = new Mass(
+    spring.anchorX,
+    spring.anchorY + spring.equilibriumLength,
+    5
+  );
 
   // Buttons to change display mode
-  createButton("Beginner").position(20, 160).mousePressed(() => mode = "Beginner");
-  createButton("Intermediate").position(100, 160).mousePressed(() => mode = "Intermediate");
-  createButton("Advanced").position(220, 160).mousePressed(() => mode = "Advanced");
+  createButton("Beginner")
+    .position(20, 160)
+    .mousePressed(() => (mode = "Beginner"));
+  createButton("Intermediate")
+    .position(100, 160)
+    .mousePressed(() => (mode = "Intermediate"));
+  createButton("Advanced")
+    .position(220, 160)
+    .mousePressed(() => (mode = "Advanced"));
 
   // Reset button (top right)
-  createButton("Reset").position(width - 80, 20).mousePressed(resetSimulation);
+  createButton("Reset")
+    .position(width - 80, 20)
+    .mousePressed(resetSimulation);
 }
 
 // ---------------- DRAW LOOP ----------------
@@ -64,7 +76,7 @@ function draw() {
     textAlign(CENTER);
     textSize(30);
     fill(200, 50, 50);
-    text('stopped', width / 2, height - 50);
+    text("stopped", width / 2, height - 50);
     pop();
   }
 
@@ -82,16 +94,16 @@ function draw() {
 
     // use equilibriumLength as the static offset so dynamics are around that line
     let stretch = massObj.y - (spring.anchorY + spring.equilibriumLength); // spring stretch relative to equilibrium
-    let force = -k * stretch;       // Hooke's law centered at equilibrium
-    let acc = force / m;            // F = ma
+    let force = -k * stretch; // Hooke's law centered at equilibrium
+    let acc = force / m; // F = ma
 
     // velocity update
     let vBefore = massObj.vel + acc;
     massObj.vel = vBefore * damping; // apply damping
-    massObj.y += massObj.vel;        // update position
+    massObj.y += massObj.vel; // update position
 
     // energy lost to damping (converted to heat)
-    let dE = 0.5 * m * (vBefore*vBefore - massObj.vel*massObj.vel);
+    let dE = 0.5 * m * (vBefore * vBefore - massObj.vel * massObj.vel);
     heatEnergy += max(dE, 0);
 
     // add to displacement history (for graph)
@@ -117,12 +129,12 @@ function draw() {
 
   // Extra visuals depending on mode
   if (mode === "Intermediate" || mode === "Advanced") {
-    drawDisplacementGraph();  // graph of displacement over time
-    drawArrows();             // velocity & acceleration arrows
+    drawDisplacementGraph(); // graph of displacement over time
+    drawArrows(); // velocity & acceleration arrows
   }
   if (mode === "Advanced") {
-    drawEnergy();             // energy bar chart
-    drawDisplacementArrow();  // Δx arrow
+    drawEnergy(); // energy bar chart
+    drawDisplacementArrow(); // Δx arrow
   }
 }
 
@@ -142,7 +154,11 @@ function resetSimulation() {
 
   // reset equilibrium and mass position & velocity
   updateEquilibriumLength();
-  massObj = new Mass(spring.anchorX, spring.anchorY + spring.equilibriumLength, 5);
+  massObj = new Mass(
+    spring.anchorX,
+    spring.anchorY + spring.equilibriumLength,
+    5
+  );
 }
 
 // ---------------- ENERGY FUNCTIONS ----------------
@@ -153,7 +169,10 @@ function computeCurrentEnergy() {
   let g = 9.81;
 
   // ensure we have a sensible centre Y to use
-  let centerY = (massObj.centerY !== undefined) ? massObj.centerY : (massObj.y + massObj.size / 2);
+  let centerY =
+    massObj.centerY !== undefined
+      ? massObj.centerY
+      : massObj.y + massObj.size / 2;
 
   // stretch relative to the natural (unstretched) spring length (in pixels),
   // convert to meters using the same pixel→meter scale used elsewhere (40 px = 1 m)
@@ -167,7 +186,7 @@ function computeCurrentEnergy() {
   let scaleFactor = 200; // arbitrary factor to make bars visible
   let PEe = 0.5 * k * stretchMeters * stretchMeters * scaleFactor;
 
-  let PEg = m * g * ((500 - centerY) / 40);  // pixel → meter scale (same as before)
+  let PEg = m * g * ((500 - centerY) / 40); // pixel → meter scale (same as before)
   return { KE, PEe, PEg };
 }
 
@@ -287,7 +306,7 @@ function drawArrows() {
   let k = kSlider.value();
   let m = massSlider.value();
   let stretch = massObj.y - (spring.anchorY + spring.equilibriumLength);
-  let acc = -k * stretch / m;
+  let acc = (-k * stretch) / m;
 
   const vScale = 10;
   const aScale = 100;
@@ -298,7 +317,14 @@ function drawArrows() {
     stroke("blue");
     line(x, y, x, y + vel * vScale);
     fill("blue");
-    triangle(x - 5, y + vel * vScale, x + 5, y + vel * vScale, x, y + vel * vScale + (vel > 0 ? 10 : -10));
+    triangle(
+      x - 5,
+      y + vel * vScale,
+      x + 5,
+      y + vel * vScale,
+      x,
+      y + vel * vScale + (vel > 0 ? 10 : -10)
+    );
     noStroke();
     fill("blue");
     text("Velocity", x + 10, y + vel * vScale);
@@ -308,7 +334,14 @@ function drawArrows() {
     stroke("red");
     line(x, y, x, y + acc * aScale);
     fill("red");
-    triangle(x - 5, y + acc * aScale, x + 5, y + acc * aScale, x, y + acc * aScale + (acc > 0 ? 10 : -10));
+    triangle(
+      x - 5,
+      y + acc * aScale,
+      x + 5,
+      y + acc * aScale,
+      x,
+      y + acc * aScale + (acc > 0 ? 10 : -10)
+    );
     noStroke();
     fill("red");
     text("Acceleration", x + 10, y + acc * aScale);
@@ -320,7 +353,10 @@ function drawArrows() {
 // ---------------- INPUT EVENTS ----------------
 function mousePressed() {
   // Click on mass to drag it
-  if (!running && dist(mouseX, mouseY, massObj.x, massObj.centerY) < massObj.size / 2) {
+  if (
+    !running &&
+    dist(mouseX, mouseY, massObj.x, massObj.centerY) < massObj.size / 2
+  ) {
     dragging = true;
     displacementHistory = [];
   } else if (!running) {
@@ -395,7 +431,7 @@ class Mass {
     this.y = y;
     this.mass = m;
     this.vel = 0;
-    this.size = 40;      // block size
+    this.size = 40; // block size
     this.hookHeight = 20;
     this.hookWidth = 10;
   }
@@ -406,7 +442,12 @@ class Mass {
     push();
     stroke(0);
     fill(0);
-    rect(this.x - this.hookWidth / 2, this.centerY - this.hookHeight, this.hookWidth, this.hookHeight);
+    rect(
+      this.x - this.hookWidth / 2,
+      this.centerY - this.hookHeight,
+      this.hookWidth,
+      this.hookHeight
+    );
     stroke(0);
     strokeWeight(2);
     fill("#c8c8c8");
