@@ -219,7 +219,7 @@ function drawEnergy() {
   drawBar(60, PEg, "blue", "PE(grav)");
   drawBar(120, PEe, "green", "PE(elas)");
   drawBar(180, Heat, "orange", "Heat");
-  drawBar(240, totalEnergy, "purple", "Total");
+  //drawBar(240, totalEnergy, "purple", "Total");
 
   // axis with tick marks
   stroke(0);
